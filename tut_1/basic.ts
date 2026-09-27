@@ -1,12 +1,20 @@
+import { Effect, Data } from "effect";
 import axios from "axios";
 
-const getFn = async (url: string): Promise<string> => {
-	try {
-		const res = await axios.get(url);
-		return res.data;
-	} catch (e: unknown) {
-		throw new Error(`${e?.message}`);
-	}
+
+class ErroUnreachable extends Data.TaggedError("ErroUnreachable")<{
+	readonly cause: string;
+	readonly url: string;
+}> { }
+
+const getFn = (url: string): Effect<string, ErroUnreachable, string> => {
+	Effect.tryPromise({
+		try: async () => {
+			const res = await axios.get(url);
+			return res.data;
+		},
+		catch: (cause: unknown) => new ErroUnreachable({ cause, url })
+	})
 };
 
 const main = async () => {
