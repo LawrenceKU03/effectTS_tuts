@@ -7,7 +7,7 @@ class ErroUnreachable extends Data.TaggedError("ErroUnreachable")<{
 	readonly url: string;
 }> { }
 
-const getFn = (url: string): Effect<string, ErroUnreachable, string> => {
+const getFn = (url: string): Effect<string, ErroUnreachable, never> => {
 	Effect.tryPromise({
 		try: async () => {
 			const res = await axios.get(url);
